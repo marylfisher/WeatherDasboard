@@ -43,7 +43,7 @@ class WeatherService {
     }
   }
   // TODO: Create destructureLocationData method
-  private destructureLocationData(locationData: Coordinates): Coordinates {
+  private destructureLocationData(locationData: Coordinates[]): Coordinates {
       const { lat , lon } = locationData [0];
       return { lat, lon };
   }
@@ -53,7 +53,7 @@ class WeatherService {
   }
   // TODO: Create buildWeatherQuery method
   private buildWeatherQuery(coordinates: Coordinates): string {
-    return `${this.baseURL}/search.json?key=${this.apiKey}&q=${city}`;
+    return `${this.baseURL}/search.json?key=${this.apiKey}&q=${coordinates.lat},${coordinates.lon}`;
   }
   // TODO: Create fetchAndDestructureLocationData method
   private async fetchAndDestructureLocationData(city:string): Promise<Coordinates> {
@@ -77,7 +77,7 @@ class WeatherService {
     return new WeatherObj(weatherName, weatherCode);
   }
   // TODO: Complete buildForecastArray method
-  private buildForecastArray(currentWeather: Weather, weatherData: any[]) {
+  private buildForecastArray(weatherData: any[]):WeatherObj[] {
     return weatherData.map((data: any) => {
       const weatherName = data.condition.text;
       const weatherCode = data.condition.code;
@@ -89,7 +89,9 @@ class WeatherService {
     this.cityName = city;
     const coordinates = await this.fetchAndDestructureLocationData(city);
     const weatherData = await this.fetchWeatherData(coordinates);
-    return this.parseCurrentWeather(weatherData);
+    const currentWeather = this.parseCurrentWeather(weatherData);
+    const forecastArray = this.buildForecastArray(weatherData.forecast.forecastday);
+    return { currentWeather, forecastArray };
   }
 }
 
