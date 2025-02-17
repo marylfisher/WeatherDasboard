@@ -1,3 +1,6 @@
+import fs from 'node:fs/promises';
+import { v4 as uuidv4 } from 'uuid';
+
 // TODO: Define a City class with name and id properties
 class City {
   name: string;
