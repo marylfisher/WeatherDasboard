@@ -48,8 +48,8 @@ class WeatherService {
       return { lat, lon };
   }
   // TODO: Create buildGeocodeQuery method
-  private buildGeocodeQuery(): string {
-
+  private buildGeocodeQuery(city:string): string {
+    return `${this.baseURL}/search.json?key=${this.apiKey}&q=${city}`;
   }
   // TODO: Create buildWeatherQuery method
   private buildWeatherQuery(coordinates: Coordinates): string {
@@ -71,16 +71,25 @@ class WeatherService {
     }
   }
   // TODO: Build parseCurrentWeather method
-  private parseCurrentWeather(response: any) {
-
+  private parseCurrentWeather(response: any): WeatherObj {
+    const weatherName = response.current.condition.text;
+    const weatherCode = response.current.condition.code;
+    return new WeatherObj(weatherName, weatherCode);
   }
   // TODO: Complete buildForecastArray method
   private buildForecastArray(currentWeather: Weather, weatherData: any[]) {
-
+    return weatherData.map((data: any) => {
+      const weatherName = data.condition.text;
+      const weatherCode = data.condition.code;
+      return new WeatherObj(weatherName, weatherCode);
+    });
   }
   // TODO: Complete getWeatherForCity method
   async getWeatherForCity(city: string) {
-
+    this.cityName = city;
+    const coordinates = await this.fetchAndDestructureLocationData(city);
+    const weatherData = await this.fetchWeatherData(coordinates);
+    return this.parseCurrentWeather(weatherData);
   }
 }
 
